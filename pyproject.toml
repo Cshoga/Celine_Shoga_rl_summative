@@ -3,7 +3,7 @@ name = "Celine_Shoga_rl_summative"
 version = "0.1.0"
 description = "GovMate: RL agent guiding citizens through multi-agency government services"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "torch>=2.9",
     "torchrl>=0.10",
@@ -19,11 +19,3 @@ dependencies = [
 
 [tool.uv]
 package = false
-
-[tool.uv.sources]
-torch = { index = "pytorch-cu128", marker = "sys_platform == 'win32'" }
-
-[[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
-explicit = true
