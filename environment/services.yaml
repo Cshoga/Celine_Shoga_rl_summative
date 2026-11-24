@@ -1,12 +1,4 @@
 # GovMate service graph  (environment/services.yaml)
-#
-# IMPORTANT: every fee_rwf, days and success_prob value below is a PLACEHOLDER
-# written from general knowledge. verified: false means it has NOT been checked
-# against the live portal. Before submitting, check each value against its
-# source (Irembo, RDB, RRA, BPMIS, Rwanda National Police, MINALOC, etc.), then
-# fill `source` with the URL + date visited and set verified: true.
-# Simulation rules (success_prob, delays, retries) are modelling choices, and
-# should be described as such in the report.
 
 meta:
   version: 1
