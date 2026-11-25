@@ -214,7 +214,7 @@ goals:
         verified: True
       - id: drv_pass_theory
         name: Sit and pass theory exam
-        Kind: visit
+        kind: visit
         agency: Rwanda National Police
         portal: Exam centre
         needs_docs: [national_id, proof_of_payment]
