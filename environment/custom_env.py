@@ -361,7 +361,7 @@ class GovMateEnv(gym.Env):
         if self.renderer is None:
             try:
                 from environment.rendering import GovMateRenderer
-            except ImportError as exc:  # rendering.py is written in the next step
+            except ImportError as exc:  
                 raise NotImplementedError(
                     "environment/rendering.py (GovMateRenderer) is not implemented yet"
                 ) from exc
