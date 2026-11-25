@@ -60,6 +60,16 @@ observation_provenance:
   patience: simulated citizen state, decremented by redundant/invalid actions
   digital_access: simulated citizen attribute, revealed by ask_eligibility
 
+# Documents the citizen can obtain through the advise_gather_document action.
+# (business_cert and proof_of_payment are produced by steps, not gathered.)
+
+gatherable:
+  national_id:        {fee_rwf: 500,   days: [3, 10], success_prob: 0.90, source: https://irembo.gov.rw/home/citizen/all_services, verified: True}
+  phone_mobile_money: {fee_rwf: 0,  days: [0, 1],  success_prob: 0.95, source: https://irembo.gov.rw/home/citizen/all_services, verified: True}
+  passport_photo:     {fee_rwf: 0,  days: [0, 1],  success_prob: 0.97, source: https://irembo.gov.rw/home/citizen/all_services, verified: True}
+  tin:                {fee_rwf: 0,     days: [1, 3],  success_prob: 0.90, source: https://onestopcentre.rdb.rw, verified: True}
+  upi_land_title:     {fee_rwf: 0, days: [5, 20], success_prob: 0.80, source: https://irembo.gov.rw/home/citizen/all_services, verified: True}
+
 # Goals and their service steps.
 # Fields per step:
 #   needs_docs     documents the citizen must hold before this step can run
@@ -79,6 +89,7 @@ goals:
     description: Register a company and obtain tax registration
     steps:
       - id: biz_name_reservation
+        kind: submit
         name: Reserve business name
         agency: RDB
         portal: Irembo / RDB online registration
@@ -93,6 +104,7 @@ goals:
         source: https://urs.rdb.rw/auth/login
         verified: True
       - id: biz_submit_registration
+        kind: submit
         name: Submit company registration
         agency: RDB
         portal: RDB online registration
@@ -107,6 +119,7 @@ goals:
         source: https://urs.rdb.rw/auth/login
         verified: True
       - id: biz_pay_fee
+        kind: pay
         name: Pay registration fee
         agency: RDB
         portal: Irembo / mobile money
@@ -121,6 +134,7 @@ goals:
         source: https://urs.rdb.rw/auth/loginTODO
         verified: True
       - id: biz_certificate_issued
+        kind: status
         name: Registration certificate issued
         agency: RDB
         portal: RDB
@@ -135,6 +149,7 @@ goals:
         source: https://urs.rdb.rw/auth/login
         verified: True
       - id: biz_tax_registration
+        kind: submit
         name: Tax registration (TIN)
         agency: RRA
         portal: RRA e-tax
@@ -153,6 +168,7 @@ goals:
     description: Obtain a definitive driving licence
     steps:
       - id: drv_provisional_application
+        kind: submit
         name: Apply for provisional licence
         agency: Rwanda National Police
         portal: Irembo
@@ -167,6 +183,7 @@ goals:
         source: https://irembo.gov.rw/home/citizen/all_services
         verified: True
       - id: drv_book_theory
+        kind: book
         name: Book PDL theory exam
         agency: Rwanda National Police
         portal: Irembo
@@ -181,6 +198,7 @@ goals:
         source: https://irembo.gov.rw/home/citizen/all_services
         verified: True
       - id: drv_pay_theory
+        kind: pay
         name: Pay theory exam fee
         agency: Rwanda National Police
         portal: Irembo / mobile money
@@ -196,6 +214,7 @@ goals:
         verified: True
       - id: drv_pass_theory
         name: Sit and pass theory exam
+        Kind: visit
         agency: Rwanda National Police
         portal: Exam centre
         needs_docs: [national_id, proof_of_payment]
@@ -209,6 +228,7 @@ goals:
         source: TODO (pass rate is a modelling choice, not an official statistic)
         verified: false
       - id: drv_book_practical
+        kind: book
         name: Book practical exam
         agency: Rwanda National Police
         portal: Irembo
@@ -223,6 +243,7 @@ goals:
         source: https://irembo.gov.rw/home/citizen/all_services
         verified: True
       - id: drv_pass_practical
+        kind: visit
         name: Sit and pass practical exam
         agency: Rwanda National Police
         portal: Test ground
@@ -237,6 +258,7 @@ goals:
         source: https://irembo.gov.rw/home/citizen/all_services
         verified: True
       - id: drv_issue_definitive
+        kind: pay
         name: Pay and receive definitive licence
         agency: Rwanda National Police
         portal: Irembo / mobile money
@@ -255,6 +277,7 @@ goals:
     description: Pay annual land (fixed asset) tax
     steps:
       - id: land_locate_upi
+        kind: lookup
         name: Locate land UPI
         agency: Land Authority
         portal: Land administration system
@@ -269,6 +292,7 @@ goals:
         source: TODO
         verified: false
       - id: land_check_due
+        kind: lookup
         name: Check amount due
         agency: Local government / RRA
         portal: Irembo / RRA
@@ -283,6 +307,7 @@ goals:
         source: https://localgov.rra.gov.rw/change_language/en/
         verified: True
       - id: land_pay
+        kind: pay
         name: Pay land tax (mobile money / bank)
         agency: Local government / RRA
         portal: Irembo / mobile money
@@ -297,6 +322,7 @@ goals:
         source: https://localgov.rra.gov.rw/change_language/en/
         verified: True
       - id: land_receipt
+        kind: status
         name: Obtain receipt
         agency: Local government / RRA
         portal: Irembo
@@ -315,6 +341,7 @@ goals:
     description: Obtain an e-passport
     steps:
       - id: pass_apply
+        kind: submit
         name: Apply for e-passport
         agency: Directorate General of Immigration and Emigration
         portal: Irembo
@@ -329,6 +356,7 @@ goals:
         source: https://irembo.gov.rw/home/citizen/all_services
         verified: True
       - id: pass_pay
+        kind: pay
         name: Pay passport fee
         agency: Directorate General of Immigration and Emigration
         portal: Irembo / mobile money
@@ -347,6 +375,7 @@ goals:
     description: Obtain a building permit
     steps:
       - id: bld_confirm_zoning
+        kind: lookup
         name: Confirm land use / zoning
         agency: City / district one-stop centre
         portal: BPMIS / district office
@@ -361,6 +390,7 @@ goals:
         source: https://onestopcentre.rdb.rw/
         verified: True
       - id: bld_drawings
+        kind: gather
         name: Obtain architectural and engineering drawings
         agency: Licensed architect / engineer (private)
         portal: Private provider
@@ -375,6 +405,7 @@ goals:
         source: https://onestopcentre.rdb.rw/
         verified: True
       - id: bld_submit_bpmis
+        kind: submit
         name: Submit application on BPMIS
         agency: City / district one-stop centre
         portal: BPMIS
@@ -389,6 +420,7 @@ goals:
         source: https://onestopcentre.rdb.rw/
         verified: True
       - id: bld_pay_fee
+        kind: pay
         name: Pay permit fee
         agency: City / district one-stop centre
         portal: BPMIS / mobile money
@@ -403,6 +435,7 @@ goals:
         source: https://onestopcentre.rdb.rw/
         verified: True
       - id: bld_review
+        kind: visit
         name: Inspection / technical review
         agency: City / district one-stop centre
         portal: BPMIS / site visit
@@ -417,6 +450,7 @@ goals:
         source: https://onestopcentre.rdb.rw/
         verified: True
       - id: bld_permit_issued
+        kind: status
         name: Permit issued
         agency: City / district one-stop centre
         portal: BPMIS
