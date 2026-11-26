@@ -56,7 +56,12 @@ class GovMateRenderer:
         if mode == "human":
             pygame.init()
             pygame.display.set_caption("GovMate - RL agent guiding citizens through government services")
-            self.screen = pygame.display.set_mode((W, H))
+            # Fit the window to the user's display (laptop screens are often < 740 px
+            # tall after Windows scaling) while keeping the fixed W x H drawing surface.
+            info = pygame.display.Info()
+            scale = min(1.0, (info.current_w - 40) / W, (info.current_h - 120) / H)
+            size = (max(640, int(W * scale)), max(400, int(H * scale)))
+            self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
             self.clock = pygame.time.Clock()
 
     # ---------------------------------------------------------------- utils
@@ -241,7 +246,15 @@ class GovMateRenderer:
                 if event.type == pygame.QUIT:
                     self.close()
                     sys.exit(0)
-            self.screen.blit(self.surface, (0, 0))
+            win_w, win_h = self.screen.get_size()
+            if (win_w, win_h) == (W, H):
+                self.screen.blit(self.surface, (0, 0))
+            else:   # scale to the window, keeping the aspect ratio
+                k = min(win_w / W, win_h / H)
+                scaled = pygame.transform.smoothscale(self.surface, (int(W * k), int(H * k)))
+                self.screen.fill(BG)
+                self.screen.blit(scaled, ((win_w - scaled.get_width()) // 2,
+                                          (win_h - scaled.get_height()) // 2))
             pygame.display.flip()
             self.clock.tick(self.env.metadata["render_fps"])
             return None
