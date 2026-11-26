@@ -1,4 +1,11 @@
-"""DQN (value-based) training for GovMate using TorchRL."""
+"""DQN (value-based) training for GovMate using TorchRL.
+
+Run one experiment (overrides are key=value pairs):
+    uv run python training/dqn_training.py --run_name dqn_test --set lr=0.0005 gamma=0.95
+
+Components (all from TorchRL): GymWrapper env, QValueActor, EGreedyModule,
+SyncDataCollector, ReplayBuffer, DQNLoss (optionally Double DQN), SoftUpdate.
+"""
 from __future__ import annotations
 
 import argparse
@@ -11,7 +18,10 @@ import torch
 from tensordict import TensorDict
 from tensordict.nn import TensorDictSequential
 from torch import nn
-from torchrl.collectors import SyncDataCollector
+try:                                   # TorchRL >= 0.15 renamed SyncDataCollector -> Collector
+    from torchrl.collectors import Collector as SyncDataCollector
+except ImportError:                    # older TorchRL
+    from torchrl.collectors import SyncDataCollector
 from torchrl.data import LazyTensorStorage, ReplayBuffer
 from torchrl.modules import MLP, EGreedyModule, QValueActor
 from torchrl.objectives import DQNLoss, SoftUpdate
@@ -26,10 +36,10 @@ class DQNConfig:
     run_name: str = "dqn_default"
     seed: int = 0
     # budget
-    total_frames: int = 100_000          
-    frames_per_batch: int = 100          
-    updates_per_batch: int = 50          
-    init_random_frames: int = 2_000     
+    total_frames: int = 100_000          # environment steps collected
+    frames_per_batch: int = 100          # steps collected between update phases
+    updates_per_batch: int = 50          # gradient steps per phase
+    init_random_frames: int = 2_000      # random warm-up before learning
     # network / optimisation
     hidden: tuple = (128, 128)
     lr: float = 1e-3
@@ -62,7 +72,7 @@ def make_selector(actor):
     def select(obs) -> int:
         td = TensorDict({"observation": torch.as_tensor(obs, dtype=torch.float32)}, batch_size=[])
         with torch.no_grad():
-            return int(actor(td)["action"])
+            return int(actor(td)["action"].argmax(-1))
     return select
 
 
