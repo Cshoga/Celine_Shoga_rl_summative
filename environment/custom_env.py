@@ -97,6 +97,10 @@ class GovMateEnv(gym.Env):
         self.steps = 0
         self.last_outcome = NA
         self.last_action = None
+        self.last_reward = 0.0
+        self.episode_return = 0.0
+        self.end_reason = None
+        self.action_log: list[tuple] = []
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
@@ -305,7 +309,13 @@ class GovMateEnv(gym.Env):
                 reward += self.rw["abandon"]
             elif self.steps >= self.meta["max_steps"] or self.days >= self.meta["max_days"]:
                 truncated, end_reason = True, "timeout"
-
+                
+        self.last_reward = float(reward)
+        self.episode_return += float(reward)
+        self.end_reason = end_reason
+        self.action_log.append((self.steps, name, OUTCOME_NAMES[outcome], float(reward)))
+        self.action_log = self.action_log[-8:]
+        
         info = self._info()
         info["end_reason"] = end_reason
         info["outcome"] = OUTCOME_NAMES[outcome]
