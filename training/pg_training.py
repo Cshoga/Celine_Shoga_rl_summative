@@ -188,10 +188,16 @@ def train(cfg: PGConfig) -> dict:
             with torch.no_grad():
                 advantage_module(data)
             out = loss_module(data)
-            loss = out["loss_objective"] + out["loss_critic"] + out["loss_entropy"]
+            # entropy_coeff=0 makes TorchRL drop the loss_entropy term, so sum whatever loss_* exist
+            loss = sum(v for k, v in out.items() if k.startswith("loss_"))
             step_optimizer(loss)
+            if "entropy" in out.keys():
+                ent = out["entropy"].detach().mean().item()
+            else:                                   # no bonus -> measure entropy separately
+                with torch.no_grad():
+                    ent = actor.get_dist(data).entropy().mean().item()
             add(policy_loss=out["loss_objective"].item(), critic_loss=out["loss_critic"].item(),
-                entropy=out["entropy"].item())
+                entropy=ent)
 
         else:  # ppo
             with torch.no_grad():
