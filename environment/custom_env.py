@@ -43,7 +43,7 @@ KIND_ACTION = {
     "lookup": "explain_next_step",
     "gather": "advise_gather_document",
 }
-KINDS = list(KIND_ACTION)                      
+KINDS = list(KIND_ACTION)                      # 7 kinds (+1 "none" slot in obs)
 ACTION_KIND = {v: k for k, v in KIND_ACTION.items()}
 
 SUCCESS, REJECTED, DELAYED, NA = 0, 1, 2, 3    # last-outcome codes
@@ -70,10 +70,19 @@ class GovMateEnv(gym.Env):
         self.goals = {g: v["steps"] for g, v in self.cfg["goals"].items()}
         self.step_by_id = {s["id"]: s for steps in self.goals.values() for s in steps}
 
+        stale = [sid for sid, s in self.step_by_id.items() if "kind" not in s]
+        if stale or "gatherable" not in self.cfg:
+            raise ValueError(
+                f"services.yaml problem: steps missing a lowercase `kind` key: {stale}; "
+                "also check that a `gatherable` section exists"
+            )
+
         self.render_mode = render_mode
         self.renderer = None
 
         self.action_space = spaces.Discrete(len(ACTIONS))
+        # goal(5+unknown) + docs(7) + progress(1) + next kind(7+none)
+        # + last outcome(4) + days, fees, patience(3) + digital(1) + remaining(1)
         self.obs_dim = (len(self.goal_names) + 1) + len(self.docs) + 1 \
             + (len(KINDS) + 1) + 4 + 3 + 1 + 1
         self.observation_space = spaces.Box(0.0, 1.0, (self.obs_dim,), np.float32)
@@ -244,16 +253,17 @@ class GovMateEnv(gym.Env):
             reward += self.rw["abandon"]       # closing unresolved = failure
 
         elif name == "escalate_to_human":
-            if not nxt or self.escalations >= 2:
+            # A human officer completes the next step for sure (even with missing
+            # documents) but this is slow and costly, and only possible once the
+            # goal is known. Net reward is negative: it is a last-resort safety valve.
+            if not self.goal_known or not nxt or self.escalations >= 2:
                 outcome, r = self._penalty("invalid_action", 1.0)
+                reward += r
             else:
                 self.escalations += 1
-                self.goal_known = True
                 self.days += 3
                 outcome, r = self._run_step(nxt, force=True)
-                reward += r - 1.0               # human handover costs the agent
-            if outcome == NA:
-                reward += r
+                reward += r + self.rw.get("escalation_cost", -3.0)
 
         elif name == "advise_gather_document":
             if not self.goal_known or not nxt:
@@ -282,7 +292,7 @@ class GovMateEnv(gym.Env):
                     outcome, r = self._penalty("invalid_action", 1.0)
                     reward += r
 
-        else:  
+        else:  # explain_next_step / guide_* / book / visit / check_status
             if not self.goal_known or not nxt:
                 outcome, r = self._penalty("invalid_action", 1.0)
                 reward += r
@@ -309,13 +319,13 @@ class GovMateEnv(gym.Env):
                 reward += self.rw["abandon"]
             elif self.steps >= self.meta["max_steps"] or self.days >= self.meta["max_days"]:
                 truncated, end_reason = True, "timeout"
-                
+
         self.last_reward = float(reward)
         self.episode_return += float(reward)
         self.end_reason = end_reason
         self.action_log.append((self.steps, name, OUTCOME_NAMES[outcome], float(reward)))
         self.action_log = self.action_log[-8:]
-        
+
         info = self._info()
         info["end_reason"] = end_reason
         info["outcome"] = OUTCOME_NAMES[outcome]
@@ -345,7 +355,7 @@ class GovMateEnv(gym.Env):
                            np.float32)
         remaining = np.array([1.0 - self.steps / self.meta["max_steps"]], np.float32)
         remaining = np.clip(remaining, 0.0, 1.0)
-        # progress 
+        # progress / remaining are only meaningful once the goal is known
         if not self.goal_known:
             progress[:] = 0.0
         return np.concatenate([goal, docs, progress, kind, outcome, scalars,
@@ -369,12 +379,7 @@ class GovMateEnv(gym.Env):
         if self.render_mode is None:
             return None
         if self.renderer is None:
-            try:
-                from environment.rendering import GovMateRenderer
-            except ImportError as exc:  
-                raise NotImplementedError(
-                    "environment/rendering.py (GovMateRenderer) is not implemented yet"
-                ) from exc
+            from environment.rendering import GovMateRenderer   # needs pygame-ce
             self.renderer = GovMateRenderer(self, self.render_mode)
         return self.renderer.draw()
 
