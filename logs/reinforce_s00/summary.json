@@ -1,0 +1,70 @@
+{
+  "config": {
+    "algo": "reinforce",
+    "run_name": "reinforce_s00",
+    "seed": 0,
+    "total_frames": 100000,
+    "frames_per_batch": 2000,
+    "hidden": [
+      128,
+      128
+    ],
+    "lr": 0.001,
+    "gamma": 0.99,
+    "max_grad_norm": 1.0,
+    "entropy_coeff": 0.01,
+    "normalize_returns": true,
+    "gae_lambda": 0.95,
+    "critic_coeff": 0.5,
+    "clip_epsilon": 0.2,
+    "ppo_epochs": 4,
+    "minibatch_size": 250,
+    "eval_every": 10000,
+    "eval_episodes": 50,
+    "final_eval_episodes": 200
+  },
+  "train_time_s": 622.8,
+  "best_periodic_eval_return": -10.05,
+  "final_eval": {
+    "standard": {
+      "scenario": "standard",
+      "episodes": 200,
+      "mean_return": -10.049999999999997,
+      "std_return": 3.552713678800501e-15,
+      "success_rate": 0.0,
+      "mean_days": 0.0,
+      "mean_fees_rwf": 0.0,
+      "mean_steps": 1.0,
+      "per_goal_success": {
+        "business_registration": 0.0,
+        "driving_licence": 0.0,
+        "land_tax": 0.0,
+        "passport": 0.0,
+        "building_permit": 0.0
+      },
+      "end_reasons": {
+        "closed_early": 200
+      }
+    },
+    "hard": {
+      "scenario": "hard",
+      "episodes": 200,
+      "mean_return": -10.049999999999997,
+      "std_return": 3.552713678800501e-15,
+      "success_rate": 0.0,
+      "mean_days": 0.0,
+      "mean_fees_rwf": 0.0,
+      "mean_steps": 1.0,
+      "per_goal_success": {
+        "business_registration": 0.0,
+        "driving_licence": 0.0,
+        "land_tax": 0.0,
+        "passport": 0.0,
+        "building_permit": 0.0
+      },
+      "end_reasons": {
+        "closed_early": 200
+      }
+    }
+  }
+}

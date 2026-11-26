@@ -1,0 +1,25 @@
+{
+  "run_name": "dqn_s07",
+  "seed": 0,
+  "total_frames": 100000,
+  "frames_per_batch": 100,
+  "updates_per_batch": 50,
+  "init_random_frames": 2000,
+  "hidden": [
+    128,
+    128
+  ],
+  "lr": 0.001,
+  "batch_size": 128,
+  "gamma": 0.99,
+  "max_grad_norm": 10.0,
+  "buffer_size": 50000,
+  "tau": 0.01,
+  "double_dqn": true,
+  "eps_init": 1.0,
+  "eps_end": 0.05,
+  "eps_decay_frames": 20000,
+  "eval_every": 10000,
+  "eval_episodes": 50,
+  "final_eval_episodes": 200
+}

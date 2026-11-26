@@ -1,0 +1,73 @@
+{
+  "config": {
+    "run_name": "dqn_s01",
+    "seed": 0,
+    "total_frames": 100000,
+    "frames_per_batch": 100,
+    "updates_per_batch": 50,
+    "init_random_frames": 2000,
+    "hidden": [
+      128,
+      128
+    ],
+    "lr": 0.0003,
+    "batch_size": 128,
+    "gamma": 0.99,
+    "max_grad_norm": 10.0,
+    "buffer_size": 50000,
+    "tau": 0.01,
+    "double_dqn": true,
+    "eps_init": 1.0,
+    "eps_end": 0.05,
+    "eps_decay_frames": 50000,
+    "eval_every": 10000,
+    "eval_episodes": 50,
+    "final_eval_episodes": 200
+  },
+  "train_time_s": 1261.1,
+  "best_periodic_eval_return": 25.754599999999996,
+  "final_eval": {
+    "standard": {
+      "scenario": "standard",
+      "episodes": 200,
+      "mean_return": 24.842750000000002,
+      "std_return": 4.482544694423024,
+      "success_rate": 0.985,
+      "mean_days": 25.045,
+      "mean_fees_rwf": 106990.0,
+      "mean_steps": 10.315,
+      "per_goal_success": {
+        "business_registration": 1.0,
+        "driving_licence": 1.0,
+        "land_tax": 1.0,
+        "passport": 1.0,
+        "building_permit": 0.925
+      },
+      "end_reasons": {
+        "goal_complete": 197,
+        "timeout": 3
+      }
+    },
+    "hard": {
+      "scenario": "hard",
+      "episodes": 200,
+      "mean_return": 24.1239,
+      "std_return": 6.532322771419061,
+      "success_rate": 0.97,
+      "mean_days": 31.355,
+      "mean_fees_rwf": 105790.0,
+      "mean_steps": 13.035,
+      "per_goal_success": {
+        "business_registration": 1.0,
+        "driving_licence": 1.0,
+        "land_tax": 1.0,
+        "passport": 1.0,
+        "building_permit": 0.85
+      },
+      "end_reasons": {
+        "goal_complete": 194,
+        "timeout": 6
+      }
+    }
+  }
+}

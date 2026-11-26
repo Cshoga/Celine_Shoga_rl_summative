@@ -1,0 +1,72 @@
+{
+  "config": {
+    "algo": "ppo",
+    "run_name": "ppo_s09",
+    "seed": 0,
+    "total_frames": 100000,
+    "frames_per_batch": 2000,
+    "hidden": [
+      128,
+      128
+    ],
+    "lr": 0.0003,
+    "gamma": 0.99,
+    "max_grad_norm": 1.0,
+    "entropy_coeff": 0.01,
+    "normalize_returns": true,
+    "gae_lambda": 0.95,
+    "critic_coeff": 0.5,
+    "clip_epsilon": 0.2,
+    "ppo_epochs": 4,
+    "minibatch_size": 250,
+    "eval_every": 10000,
+    "eval_episodes": 50,
+    "final_eval_episodes": 200
+  },
+  "train_time_s": 449.6,
+  "best_periodic_eval_return": 10.559799999999997,
+  "final_eval": {
+    "standard": {
+      "scenario": "standard",
+      "episodes": 200,
+      "mean_return": 9.12455,
+      "std_return": 15.184157625548412,
+      "success_rate": 0.625,
+      "mean_days": 5.08,
+      "mean_fees_rwf": 32782.5,
+      "mean_steps": 4.53,
+      "per_goal_success": {
+        "business_registration": 1.0,
+        "driving_licence": 0.0,
+        "land_tax": 1.0,
+        "passport": 1.0,
+        "building_permit": 0.0
+      },
+      "end_reasons": {
+        "goal_complete": 125,
+        "closed_early": 75
+      }
+    },
+    "hard": {
+      "scenario": "hard",
+      "episodes": 200,
+      "mean_return": 8.212,
+      "std_return": 14.373071105369236,
+      "success_rate": 0.625,
+      "mean_days": 6.55,
+      "mean_fees_rwf": 33937.5,
+      "mean_steps": 5.325,
+      "per_goal_success": {
+        "business_registration": 1.0,
+        "driving_licence": 0.0,
+        "land_tax": 1.0,
+        "passport": 1.0,
+        "building_permit": 0.0
+      },
+      "end_reasons": {
+        "goal_complete": 125,
+        "closed_early": 75
+      }
+    }
+  }
+}

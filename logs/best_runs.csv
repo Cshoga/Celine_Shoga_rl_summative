@@ -1,0 +1,5 @@
+algo,run,std_return,std_success,hard_return,hard_success
+dqn,dqn_s04,25.07,0.985,25.15,0.975
+reinforce,reinforce_s02,-3.6,0.0,-3.6,0.0
+a2c,a2c_s02,4.39,0.61,0.04,0.49
+ppo,ppo_s05,9.58,0.625,8.52,0.625
